@@ -53,3 +53,16 @@ func (r *OHLCVRequest) TableName() string {
 		return "ohlcv_1h"
 	}
 }
+
+func (o *OHLCV) TableName(timeframe string) string {
+	switch timeframe {
+	case "1m", "5m", "15m", "30m":
+		return "ohlcv_1m"
+	case "1h", "2h", "4h", "6h", "12h":
+		return "ohlcv_1h"
+	case "1d", "1w", "1M":
+		return "ohlcv_1d"
+	default:
+		return "ohlcv_1d"
+	}
+}

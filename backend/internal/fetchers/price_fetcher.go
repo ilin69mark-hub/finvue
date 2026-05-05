@@ -8,13 +8,13 @@ import (
 )
 
 type Ticker struct {
-	Symbol          string    `json:"symbol"`
-	Price           float64   `json:"price"`
-	PriceChange24h  float64   `json:"price_change_24h"`
-	Volume24h       float64   `json:"volume_24h"`
-	High24h         float64   `json:"high_24h"`
-	Low24h          float64   `json:"low_24h"`
-	LastUpdateTime  time.Time `json:"last_update_time"`
+	Symbol         string    `json:"symbol"`
+	Price          float64   `json:"price"`
+	PriceChange24h float64   `json:"price_change_24h"`
+	Volume24h      float64   `json:"volume_24h"`
+	High24h        float64   `json:"high_24h"`
+	Low24h         float64   `json:"low_24h"`
+	LastUpdateTime time.Time `json:"last_update_time"`
 }
 
 type PriceFetcher interface {

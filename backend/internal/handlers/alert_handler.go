@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"finvue/internal/repositories"
 	"finvue/internal/pkg/logger"
+	"finvue/internal/repositories"
 
 	"go.uber.org/zap"
 )
@@ -20,14 +20,14 @@ func NewAlertHandler(repo *repositories.AlertRepository) *AlertHandler {
 }
 
 type AlertResponse struct {
-	ID         int64     `json:"id"`
-	AssetID    int64     `json:"asset_id"`
-	AlertType  string    `json:"alert_type"`
-	Message    string    `json:"message"`
-	Value      float64   `json:"value,omitempty"`
-	Threshold  float64   `json:"threshold,omitempty"`
-	IsRead     bool      `json:"is_read"`
-	CreatedAt  string    `json:"created_at"`
+	ID        int64   `json:"id"`
+	AssetID   int64   `json:"asset_id"`
+	AlertType string  `json:"alert_type"`
+	Message   string  `json:"message"`
+	Value     float64 `json:"value,omitempty"`
+	Threshold float64 `json:"threshold,omitempty"`
+	IsRead    bool    `json:"is_read"`
+	CreatedAt string  `json:"created_at"`
 }
 
 func (h *AlertHandler) GetAlerts(w http.ResponseWriter, r *http.Request) {

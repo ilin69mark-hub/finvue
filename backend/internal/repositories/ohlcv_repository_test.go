@@ -94,8 +94,8 @@ func TestTableNameFromTimeframe(t *testing.T) {
 
 func TestParseTimeframe(t *testing.T) {
 	tests := []struct {
-		input   string
-		expect  models.Timeframe
+		input  string
+		expect models.Timeframe
 	}{
 		{"1m", models.Timeframe1M},
 		{"1M", models.Timeframe1M},

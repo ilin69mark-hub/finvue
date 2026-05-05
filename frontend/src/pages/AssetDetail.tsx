@@ -24,14 +24,17 @@ export default function AssetDetail() {
   useEffect(() => {
     if (!id) return
 
-    setLoading(true)
-    setError(null)
+    let cancelled = false
 
-    Promise.all([
-      getAssetById(Number(id)),
-      getOHLCV({ asset_id: Number(id), timeframe, limit: 50 })
-    ])
-      .then(([assetData, ohlcvData]) => {
+    const fetchData = async () => {
+      try {
+        const [assetData, ohlcvData] = await Promise.all([
+          getAssetById(Number(id)),
+          getOHLCV({ asset_id: Number(id), timeframe, limit: 50 })
+        ])
+
+        if (cancelled) return
+
         if (!assetData || Object.keys(assetData).length === 0) {
           setError('Актив не найден в базе данных')
         } else {
@@ -41,13 +44,27 @@ export default function AssetDetail() {
             setCurrentPrice(assetData.last_price)
           }
         }
-        setLoading(false)
-      })
-      .catch(err => {
-        console.error('Error loading data:', err)
-        setError(err.message)
-        setLoading(false)
-      })
+      } catch (err) {
+        if (!cancelled) {
+          console.error('Error loading data:', err)
+          setError(err instanceof Error ? err.message : 'Unknown error')
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      }
+    }
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLoading(true)
+     
+    setError(null)
+    fetchData()
+
+    return () => {
+      cancelled = true
+    }
   }, [id, timeframe])
 
   if (loading) return <div className="p-6 text-center">Загрузка...</div>

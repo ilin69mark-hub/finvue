@@ -20,10 +20,10 @@ type CreateAssetDTO struct {
 }
 
 type UpdateAssetDTO struct {
-	Name       string  `json:"name" validate:"max=100"`
+	Name      string  `json:"name" validate:"max=100"`
 	AssetType string  `json:"asset_type" validate:"oneof=crypto stock forex"`
-	IsActive   *bool   `json:"is_active,omitempty"`
-	LastPrice  float64 `json:"last_price,omitempty"`
+	IsActive  *bool   `json:"is_active,omitempty"`
+	LastPrice float64 `json:"last_price,omitempty"`
 }
 
 type AssetListResponse struct {

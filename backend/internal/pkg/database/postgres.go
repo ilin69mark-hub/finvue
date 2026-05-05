@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"finvue/internal/pkg/config"
 	"finvue/internal/pkg/logger"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"go.uber.org/zap"
 )

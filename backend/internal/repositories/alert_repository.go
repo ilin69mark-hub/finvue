@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgxpool"
 	"finvue/internal/models"
 	"finvue/internal/pkg/database"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type AlertRepository struct {

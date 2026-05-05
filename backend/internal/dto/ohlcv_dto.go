@@ -14,18 +14,18 @@ type OHLCVDTO struct {
 }
 
 type OHLCVListResponse struct {
-	Asset     AssetDTO    `json:"asset"`
-	Timeframe string      `json:"timeframe"`
+	Asset     AssetDTO   `json:"asset"`
+	Timeframe string     `json:"timeframe"`
 	Candles   []OHLCVDTO `json:"candles"`
 	Total     int        `json:"total"`
 }
 
 type OHLCVQueryDTO struct {
-	AssetID   int64     `json:"asset_id" validate:"required"`
-	Timeframe string    `json:"timeframe" validate:"oneof=1m 1h 1d"`
+	AssetID   int64      `json:"asset_id" validate:"required"`
+	Timeframe string     `json:"timeframe" validate:"oneof=1m 1h 1d"`
 	From      *time.Time `json:"from,omitempty"`
 	To        *time.Time `json:"to,omitempty"`
-	Limit     int       `json:"limit" validate:"min=1,max=1000"`
+	Limit     int        `json:"limit" validate:"min=1,max=1000"`
 }
 
 func (q *OHLCVQueryDTO) SetDefaults() {

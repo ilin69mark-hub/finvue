@@ -28,14 +28,14 @@ type SMARequest struct {
 }
 
 type SMAResponse struct {
-	AssetID   int64     `json:"asset_id"`
-	Symbol    string    `json:"symbol"`
-	Timeframe string    `json:"timeframe"`
-	FastSMA   float64   `json:"fast_sma"`
-	SlowSMA   float64   `json:"slow_sma"`
-	Crossover string    `json:"crossover"`
-	LastPrice float64   `json:"last_price"`
-	UpdatedAt string    `json:"updated_at"`
+	AssetID   int64   `json:"asset_id"`
+	Symbol    string  `json:"symbol"`
+	Timeframe string  `json:"timeframe"`
+	FastSMA   float64 `json:"fast_sma"`
+	SlowSMA   float64 `json:"slow_sma"`
+	Crossover string  `json:"crossover"`
+	LastPrice float64 `json:"last_price"`
+	UpdatedAt string  `json:"updated_at"`
 }
 
 func (s *IndicatorService) CalculateSMA(ctx context.Context, req SMARequest) (*SMAResponse, error) {
@@ -151,8 +151,8 @@ func (s *IndicatorService) GetAllAssetsSMA(ctx context.Context) ([]SMAResponse, 
 	var results []SMAResponse
 	for _, asset := range assets {
 		resp, err := s.CalculateSMA(ctx, SMARequest{
-			AssetID:   asset.ID,
-			Timeframe: "1d",
+			AssetID:    asset.ID,
+			Timeframe:  "1d",
 			FastPeriod: 20,
 			SlowPeriod: 50,
 		})

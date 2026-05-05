@@ -4,15 +4,15 @@ import (
 	"encoding/json"
 	"sync"
 
-	"github.com/gorilla/websocket"
 	"finvue/internal/pkg/logger"
+	"github.com/gorilla/websocket"
 
 	"go.uber.org/zap"
 )
 
 type Hub struct {
 	clients    map[*Client]bool
-	subs      map[string]map[*Client]bool
+	subs       map[string]map[*Client]bool
 	register   chan *Client
 	unregister chan *Client
 	broadcast  chan *Message
@@ -20,9 +20,9 @@ type Hub struct {
 }
 
 type Message struct {
-	Type      string      `json:"type"`
-	Payload   interface{} `json:"payload"`
-	Symbol    string      `json:"symbol,omitempty"`
+	Type    string      `json:"type"`
+	Payload interface{} `json:"payload"`
+	Symbol  string      `json:"symbol,omitempty"`
 }
 
 type Client struct {

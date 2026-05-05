@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	BinanceBaseURL   = "https://api.binance.com"
+	BinanceBaseURL    = "https://api.binance.com"
 	BinanceAPITimeout = 30 * time.Second
 )
 
@@ -34,29 +34,29 @@ func NewBinanceFetcher() *BinanceFetcher {
 }
 
 type BinanceSymbol struct {
-	Symbol      string `json:"symbol"`
-	BaseAsset   string `json:"baseAsset"`
-	QuoteAsset  string `json:"quoteAsset"`
-	Status      string `json:"status"`
+	Symbol     string `json:"symbol"`
+	BaseAsset  string `json:"baseAsset"`
+	QuoteAsset string `json:"quoteAsset"`
+	Status     string `json:"status"`
 }
 
 type BinanceTicker struct {
-	Symbol             string `json:"symbol"`
-	LastPrice          string `json:"lastPrice"`
-	PriceChange        string `json:"priceChange"`
-	Volume             string `json:"volume"`
-	HighPrice          string `json:"highPrice"`
-	LowPrice           string `json:"lowPrice"`
+	Symbol      string `json:"symbol"`
+	LastPrice   string `json:"lastPrice"`
+	PriceChange string `json:"priceChange"`
+	Volume      string `json:"volume"`
+	HighPrice   string `json:"highPrice"`
+	LowPrice    string `json:"lowPrice"`
 }
 
 type BinanceKline struct {
-	OpenTime        int64    `json:"OpenTime"`
-	Open            string   `json:"Open"`
-	High            string   `json:"High"`
-	Low             string   `json:"Low"`
-	Close           string   `json:"Close"`
-	Volume          string   `json:"Volume"`
-	CloseTime       int64    `json:"CloseTime"`
+	OpenTime  int64  `json:"OpenTime"`
+	Open      string `json:"Open"`
+	High      string `json:"High"`
+	Low       string `json:"Low"`
+	Close     string `json:"Close"`
+	Volume    string `json:"Volume"`
+	CloseTime int64  `json:"CloseTime"`
 }
 
 func (f *BinanceFetcher) GetSupportedAssets(ctx context.Context) ([]models.Asset, error) {
@@ -157,13 +157,13 @@ func (f *BinanceFetcher) GetCurrentPrice(ctx context.Context, symbol string) (*T
 	low, _ := strconv.ParseFloat(ticker.LowPrice, 64)
 
 	return &Ticker{
-		Symbol:          ticker.Symbol,
-		Price:           price,
-		PriceChange24h:  priceChange,
-		Volume24h:       volume,
-		High24h:         high,
-		Low24h:          low,
-		LastUpdateTime:  time.Now(),
+		Symbol:         ticker.Symbol,
+		Price:          price,
+		PriceChange24h: priceChange,
+		Volume24h:      volume,
+		High24h:        high,
+		Low24h:         low,
+		LastUpdateTime: time.Now(),
 	}, nil
 }
 
@@ -208,13 +208,13 @@ func (f *BinanceFetcher) GetAllPrices(ctx context.Context) ([]Ticker, error) {
 		low, _ := strconv.ParseFloat(t.LowPrice, 64)
 
 		result = append(result, Ticker{
-			Symbol:          t.Symbol,
-			Price:           price,
-			PriceChange24h:  priceChange,
-			Volume24h:       volume,
-			High24h:         high,
-			Low24h:          low,
-			LastUpdateTime:  time.Now(),
+			Symbol:         t.Symbol,
+			Price:          price,
+			PriceChange24h: priceChange,
+			Volume24h:      volume,
+			High24h:        high,
+			Low24h:         low,
+			LastUpdateTime: time.Now(),
 		})
 	}
 

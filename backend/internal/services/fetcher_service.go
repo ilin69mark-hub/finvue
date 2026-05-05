@@ -8,25 +8,25 @@ import (
 
 	"finvue/internal/fetchers"
 	"finvue/internal/models"
-	"finvue/internal/repositories"
 	"finvue/internal/pkg/logger"
+	"finvue/internal/repositories"
 	"finvue/internal/websocket"
 
 	"go.uber.org/zap"
 )
 
 type FetcherService struct {
-	fetcher         fetchers.PriceFetcher
-	assetRepo       *repositories.AssetRepository
-	ohlcvRepo       *repositories.OHLCVRepository
-	alertRepo       *repositories.AlertRepository
+	fetcher          fetchers.PriceFetcher
+	assetRepo        *repositories.AssetRepository
+	ohlcvRepo        *repositories.OHLCVRepository
+	alertRepo        *repositories.AlertRepository
 	indicatorService *IndicatorService
-	interval        time.Duration
-	stopCh          chan struct{}
-	wg              sync.WaitGroup
-	isRunning       bool
-	mu              sync.RWMutex
-	lastSyncTime    time.Time
+	interval         time.Duration
+	stopCh           chan struct{}
+	wg               sync.WaitGroup
+	isRunning        bool
+	mu               sync.RWMutex
+	lastSyncTime     time.Time
 }
 
 func NewFetcherService(
@@ -334,8 +334,8 @@ func (s *FetcherService) buildCandleFromBucket(candles []models.OHLCV) *models.O
 
 func (s *FetcherService) checkCrossoverAndAlert(ctx context.Context, assetID int64) {
 	smaResp, err := s.indicatorService.CalculateSMA(ctx, SMARequest{
-		AssetID:   assetID,
-		Timeframe: "1d",
+		AssetID:    assetID,
+		Timeframe:  "1d",
 		FastPeriod: 20,
 		SlowPeriod: 50,
 	})

@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"finvue/internal/models"
-	"finvue/internal/repositories"
 	"finvue/internal/pkg/logger"
+	"finvue/internal/repositories"
 
 	"go.uber.org/zap"
 )
@@ -23,14 +23,14 @@ func NewOHLCVHandler(repo *repositories.OHLCVRepository, assetRepo *repositories
 }
 
 type OHLCVResponse struct {
-	ID        int64     `json:"id"`
-	AssetID   int64     `json:"asset_id"`
-	Timestamp string    `json:"timestamp"`
-	Open      float64   `json:"open"`
-	High      float64   `json:"high"`
-	Low       float64   `json:"low"`
-	Close     float64   `json:"close"`
-	Volume    float64   `json:"volume"`
+	ID        int64   `json:"id"`
+	AssetID   int64   `json:"asset_id"`
+	Timestamp string  `json:"timestamp"`
+	Open      float64 `json:"open"`
+	High      float64 `json:"high"`
+	Low       float64 `json:"low"`
+	Close     float64 `json:"close"`
+	Volume    float64 `json:"volume"`
 }
 
 func (h *OHLCVHandler) GetOHLCV(w http.ResponseWriter, r *http.Request) {
@@ -106,9 +106,9 @@ func (h *OHLCVHandler) GetOHLCV(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := struct {
-		Asset   AssetResponse   `json:"asset"`
-		Timeframe string         `json:"timeframe"`
-		Candles []OHLCVResponse `json:"candles"`
+		Asset     AssetResponse   `json:"asset"`
+		Timeframe string          `json:"timeframe"`
+		Candles   []OHLCVResponse `json:"candles"`
 	}{
 		Asset: AssetResponse{
 			ID:        asset.ID,

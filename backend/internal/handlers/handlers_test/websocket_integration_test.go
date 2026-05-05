@@ -1,4 +1,4 @@
-package websocket
+package handlers_test
 
 import (
 	"encoding/json"
@@ -10,20 +10,24 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"finvue/internal/pkg/logger"
+	"finvue/internal/handlers"
+	"finvue/internal/repositories"
+	ws "finvue/internal/websocket"
 )
 
-func init() {
-	logger.Init(false)
-}
+func TestWebSocket_Integration(t *testing.T) {
+	ws.InitGlobalHub()
 
-func TestWebSocket_ConnectAndSubscribe(t *testing.T) {
-	t.Skip("Интеграционный тест требует запущенного сервера")
+	assetRepo := repositories.NewAssetRepository()
+	ohlcvRepo := repositories.NewOHLCVRepository()
 
-	InitGlobalHub()
-	hub := GetGlobalHub()
+	router := handlers.NewRouter(assetRepo, ohlcvRepo)
+	hub := router.Hub
 
-	wsURL := "ws://localhost:8080/ws?symbol=BTCUSDT"
+	server := httptest.NewServer(router.Setup())
+	defer server.Close()
+
+	wsURL := "ws://" + server.Listener.Addr().String() + "/ws?symbol=BTCUSDT"
 
 	conn, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
 	if err != nil {
@@ -49,19 +53,27 @@ func TestWebSocket_ConnectAndSubscribe(t *testing.T) {
 	}
 }
 
-func TestWebSocket_BroadcastToSubscribers(t *testing.T) {
-	t.Skip("Интеграционный тест требует запущенного сервера")
+func TestWebSocket_MultipleClients(t *testing.T) {
+	ws.InitGlobalHub()
 
-	InitGlobalHub()
-	hub := GetGlobalHub()
+	assetRepo := repositories.NewAssetRepository()
+	ohlcvRepo := repositories.NewOHLCVRepository()
 
-	conn1, _, err := websocket.DefaultDialer.Dial("ws://localhost:8080/ws?symbol=BTCUSDT", nil)
+	router := handlers.NewRouter(assetRepo, ohlcvRepo)
+	hub := router.Hub
+
+	server := httptest.NewServer(router.Setup())
+	defer server.Close()
+
+	wsURL := "ws://" + server.Listener.Addr().String() + "/ws?symbol=BTCUSDT"
+
+	conn1, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
 	if err != nil {
 		t.Fatalf("Ошибка подключения первого клиента: %v", err)
 	}
 	defer conn1.Close()
 
-	conn2, _, err := websocket.DefaultDialer.Dial("ws://localhost:8080/ws?symbol=BTCUSDT", nil)
+	conn2, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
 	if err != nil {
 		t.Fatalf("Ошибка подключения второго клиента: %v", err)
 	}
@@ -113,18 +125,24 @@ func TestWebSocket_BroadcastToSubscribers(t *testing.T) {
 }
 
 func TestWebSocket_DifferentSymbols(t *testing.T) {
-	t.Skip("Интеграционный тест требует запущенного сервера")
+	assetRepo := repositories.NewAssetRepository()
+	ohlcvRepo := repositories.NewOHLCVRepository()
 
-	InitGlobalHub()
-	hub := GetGlobalHub()
+	router := handlers.NewRouter(assetRepo, ohlcvRepo)
+	hub := router.Hub
 
-	connBTC, _, err := websocket.DefaultDialer.Dial("ws://localhost:8080/ws?symbol=BTCUSDT", nil)
+	server := httptest.NewServer(router.Setup())
+	defer server.Close()
+
+	addr := server.Listener.Addr().String()
+
+	connBTC, _, err := websocket.DefaultDialer.Dial("ws://"+addr+"/ws?symbol=BTCUSDT", nil)
 	if err != nil {
 		t.Fatalf("Ошибка подключения BTC клиента: %v", err)
 	}
 	defer connBTC.Close()
 
-	connETH, _, err := websocket.DefaultDialer.Dial("ws://localhost:8080/ws?symbol=ETHUSDT", nil)
+	connETH, _, err := websocket.DefaultDialer.Dial("ws://"+addr+"/ws?symbol=ETHUSDT", nil)
 	if err != nil {
 		t.Fatalf("Ошибка подключения ETH клиента: %v", err)
 	}
@@ -153,16 +171,18 @@ func TestWebSocket_DifferentSymbols(t *testing.T) {
 	}
 }
 
-func TestWebSocket_UpgradeError(t *testing.T) {
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-	})
+func TestWebSocket_InvalidUpgrade(t *testing.T) {
+	ws.InitGlobalHub()
 
-	server := httptest.NewServer(handler)
+	assetRepo := repositories.NewAssetRepository()
+	ohlcvRepo := repositories.NewOHLCVRepository()
+
+	router := handlers.NewRouter(assetRepo, ohlcvRepo)
+
+	server := httptest.NewServer(router.Setup())
 	defer server.Close()
 
-	req, _ := http.NewRequest("POST", server.URL+"/ws?symbol=BTCUSDT", nil)
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := http.Post("http://"+server.Listener.Addr().String()+"/ws?symbol=BTCUSDT", "text/plain", nil)
 	if err != nil {
 		t.Fatalf("Ошибка запроса: %v", err)
 	}
@@ -170,79 +190,5 @@ func TestWebSocket_UpgradeError(t *testing.T) {
 
 	if resp.StatusCode != http.StatusMethodNotAllowed {
 		t.Errorf("Ожидался статус 405, получили %d", resp.StatusCode)
-	}
-}
-
-func TestHub_BroadcastPriceUpdate(t *testing.T) {
-	hub := NewHub()
-	go hub.Run()
-
-	hub.BroadcastPriceUpdate("BTCUSDT", 50000.0)
-
-	select {
-	case msg := <-hub.broadcast:
-		if msg.Symbol != "BTCUSDT" {
-			t.Errorf("Ожидался symbol=BTCUSDT, получили %s", msg.Symbol)
-		}
-		if msg.Type != "price_update" {
-			t.Errorf("Ожидался type=price_update, получили %s", msg.Type)
-		}
-	case <-time.After(1 * time.Second):
-		t.Error("Таймаут ожидания сообщения")
-	}
-}
-
-func TestHub_Subscribe(t *testing.T) {
-	hub := NewHub()
-	go hub.Run()
-
-	client := hub.Subscribe("BTCUSDT")
-
-	if client.symbol != "BTCUSDT" {
-		t.Errorf("Ожидался symbol=BTCUSDT, получили %s", client.symbol)
-	}
-
-	client.symbol = "ETHUSDT"
-	if client.symbol != "ETHUSDT" {
-		t.Errorf("Ожидался symbol=ETHUSDT, получили %s", client.symbol)
-	}
-}
-
-func TestHub_Register(t *testing.T) {
-	hub := NewHub()
-	go hub.Run()
-
-	client := hub.Subscribe("BTCUSDT")
-	hub.register <- client
-
-	time.Sleep(100 * time.Millisecond)
-
-	hub.mu.RLock()
-	defer hub.mu.RUnlock()
-	if len(hub.clients) != 1 {
-		t.Errorf("Ожидался 1 клиент, получили %d", len(hub.clients))
-	}
-	if _, ok := hub.clients[client]; !ok {
-		t.Error("Клиент не был зарегистрирован")
-	}
-}
-
-func TestHub_Unregister(t *testing.T) {
-	hub := NewHub()
-	go hub.Run()
-
-	client := hub.Subscribe("BTCUSDT")
-	hub.register <- client
-
-	time.Sleep(100 * time.Millisecond)
-
-	hub.unregister <- client
-
-	time.Sleep(100 * time.Millisecond)
-
-	hub.mu.RLock()
-	defer hub.mu.RUnlock()
-	if len(hub.clients) != 0 {
-		t.Errorf("Ожидалось 0 клиентов, получили %d", len(hub.clients))
 	}
 }

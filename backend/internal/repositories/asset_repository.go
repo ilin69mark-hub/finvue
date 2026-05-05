@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"finvue/internal/models"
 	"finvue/internal/pkg/database"
 	"finvue/internal/pkg/logger"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"go.uber.org/zap"
 )
@@ -196,6 +196,10 @@ func (r *AssetRepository) UpsertFromSymbol(ctx context.Context, symbol, name str
 	}
 
 	if existing != nil {
+		existing.Name = name
+		if err := r.Update(ctx, existing); err != nil {
+			return nil, err
+		}
 		return existing, nil
 	}
 

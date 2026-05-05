@@ -36,6 +36,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}): UseWebSocketRet
   const wsRef = useRef<WebSocket | null>(null)
   const attemptsRef = useRef(0)
   const reconnectTimeoutRef = useRef<number | null>(null)
+  const connectRef = useRef<() => void>(() => {})
 
   const connect = useCallback(() => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
@@ -80,7 +81,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}): UseWebSocketRet
         attemptsRef.current++
         console.log(`Reconnecting... (attempt ${attemptsRef.current}/${reconnectAttempts})`)
         reconnectTimeoutRef.current = window.setTimeout(() => {
-          connect()
+          connectRef.current()
         }, reconnectInterval)
       }
     }
@@ -117,6 +118,10 @@ export function useWebSocket(options: UseWebSocketOptions = {}): UseWebSocketRet
       disconnect()
     }
   }, [disconnect])
+
+  useEffect(() => {
+    connectRef.current = connect
+  }, [connect])
 
   useEffect(() => {
     connect()

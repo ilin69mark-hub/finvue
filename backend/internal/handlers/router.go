@@ -3,11 +3,11 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"finvue/internal/repositories"
 	"finvue/internal/services"
 	"finvue/internal/websocket"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 type Router struct {
@@ -16,6 +16,7 @@ type Router struct {
 	indicatorHandler *IndicatorHandler
 	alertHandler     *AlertHandler
 	wsHandler        *websocket.Handler
+	Hub              *websocket.Hub
 }
 
 func NewRouter(assetRepo *repositories.AssetRepository, ohlcvRepo *repositories.OHLCVRepository) *Router {
@@ -34,6 +35,7 @@ func NewRouter(assetRepo *repositories.AssetRepository, ohlcvRepo *repositories.
 		indicatorHandler: indicatorHandler,
 		alertHandler:     alertHandler,
 		wsHandler:        wsHandler,
+		Hub:              hub,
 	}
 }
 

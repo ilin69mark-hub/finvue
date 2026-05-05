@@ -3,8 +3,8 @@ package websocket
 import (
 	"net/http"
 
-	"github.com/gorilla/websocket"
 	"finvue/internal/pkg/logger"
+	"github.com/gorilla/websocket"
 
 	"go.uber.org/zap"
 )

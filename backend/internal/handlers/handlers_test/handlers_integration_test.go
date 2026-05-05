@@ -8,8 +8,15 @@ import (
 	"testing"
 
 	"finvue/internal/handlers"
+	"finvue/internal/pkg/database"
 	"finvue/internal/repositories"
 )
+
+func init() {
+	if err := database.InitForTests(); err != nil {
+		panic("Failed to init database for tests: " + err.Error())
+	}
+}
 
 func TestAssetHandler_GetAssets(t *testing.T) {
 	if testing.Short() {

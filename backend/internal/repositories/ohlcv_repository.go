@@ -6,11 +6,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"finvue/internal/models"
 	"finvue/internal/pkg/database"
 	"finvue/internal/pkg/logger"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"go.uber.org/zap"
 )

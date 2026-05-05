@@ -5,7 +5,14 @@ import (
 	"testing"
 
 	"finvue/internal/models"
+	"finvue/internal/pkg/database"
 )
+
+func init() {
+	if err := database.InitForTests(); err != nil {
+		panic("Failed to init database for tests: " + err.Error())
+	}
+}
 
 func TestAssetRepository_UpsertFromSymbol(t *testing.T) {
 	if testing.Short() {
